@@ -234,9 +234,11 @@ var GUI = (function() { //IIFE for all Views
     initialize: function() {
       this.render();
       $("#app").append(this.$el);
+      this.listenTo(app.users, "update", this.render)
     },
     events: {
-      "click button#login": "login"
+      "click button#login": "login",
+      "click #newName"  : "addNewUser"
     },
     login: function(e) {
       e.preventDefault();
@@ -249,6 +251,12 @@ var GUI = (function() { //IIFE for all Views
       })
       this.remove();
     },
+    addNewUser: function(){
+      var newUser = $("#userField").val();
+      app.users.create({username: newUser});
+      console.log(app.users)
+      this.render();
+    },
     render: function() {
       var users = this.collection.models;
       var output = "<h1>Welcome!</h1><form><select id='usernames' placeholder='CHOOSE USER'><option></option>"
@@ -256,7 +264,9 @@ var GUI = (function() { //IIFE for all Views
         output += "<option value='" + user.cid + "'>" + user.get("username") + "</option>"
       })
       output += "</select><button type='submit' name='submit' id='login'>LOG IN</button></form>"
-      this.$el.html(output);
+      var usrBtn = '<button id="newName">Add User</button>';
+      var input = '<br><input type="text" id="userField" placeholder="Add New User Name">';
+      this.$el.html(output + input + usrBtn);
     }
   });
   // generic ctor to represent interface:

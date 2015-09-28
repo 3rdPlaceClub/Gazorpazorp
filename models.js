@@ -19,13 +19,19 @@ var TaskModel = Backbone.Model.extend({
 
 var UserCollection = Backbone.Collection.extend({
 	model:UserModel,
-  activeUser:null
+	url: '/users',
+  	activeUser:null,
+  	initialize: function() {
+  		var self = this
+  		this.fetch()
+  	}
 })
 
 var TaskCollection = Backbone.Collection.extend({
 	model:TaskModel,
 	url: '/tasks',
 	initialize: function () {
-		this.fetch();
+		var self = this
+		this.fetch()
 	}
 })
