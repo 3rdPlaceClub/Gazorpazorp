@@ -97,8 +97,6 @@ var GUI = (function() { //IIFE for all Views
 
   var TaskCollectionView = Backbone.View.extend({
     initialize: function(opts) {
-      this.relevantTasks = [];
-      this.taskViews = [];
       _.extend(this, opts);
       this.listenTo(this.collection, 'add', this.addTask);
       this.listenTo(this.collection, 'change', this.updateTask);
@@ -107,7 +105,7 @@ var GUI = (function() { //IIFE for all Views
       this.render();
     },
     addTask: function(e) {
-      this.filterCollection();
+      // this.filterCollection();
       this.updateTaskView(e);
     },
     updateTask: function(e) {
@@ -119,25 +117,25 @@ var GUI = (function() { //IIFE for all Views
     // updateView: function(e) {
     //   this.render();
     // },
-    filterCollection: function() {
-      if (this.kind === "unassigned") {
-        this.relevantTasks = this.collection.filter(function(task){
-          return task.get('status') === "unassigned"
-        })
-      } else if (this.kind === "user"){
-        var assigned = this.collection.filter(function(task){
-          return task.get('status') === "in progress" && task.get('assignee') === app.currentUser.get("username");
-        });
-        var created = this.collection.filter(function(task){
-          return task.get('creator') === app.currentUser.get("username") && task.get('status') !== "completed";
-        });
-        this.relevantTasks = _.union(assigned, created);
-      } else {
-        this.relevantTasks = this.collection.where({
-          status: "completed"
-        });
-      }
-    },
+    // filterCollection: function() {
+    //   if (this.kind === "unassigned") {
+    //     this.relevantTasks = this.collection.filter(function(task){
+    //       return task.get('status') === "unassigned"
+    //     })
+    //   } else if (this.kind === "user"){
+    //     var assigned = this.collection.filter(function(task){
+    //       return task.get('status') === "in progress" && task.get('assignee') === app.currentUser.get("username");
+    //     })
+    //     var created = this.collection.filter(function(task){
+    //       return task.get('creator') === app.currentUser.get("username") && task.get('status') !== "completed";
+    //     })
+    //     this.relevantTasks = _.union(assigned, created);
+    //   } else {
+    //     this.relevantTasks = this.collection.where({
+    //       status: "completed"
+    //     });
+    //   }
+    // },
     // makeTaskView: function () {
 
     // },
@@ -148,25 +146,25 @@ var GUI = (function() { //IIFE for all Views
       this.render();
     },
     render: function() {
-      this.filterCollection();
-      this.relevantTasks.reverse();
-      // var title = this.kind === 'unassigned' ? "Unassigned Tasks" : app.currentUser.get("username") + "'s Tasks"
-      var title = "Unassigned Tasks";
-      if(this.kind === 'user'){
+
+      var title;
+      if (this.kind === "unassigned") {
+        title =  "Unassigned Tasks";
+      } if(this.kind === 'user'){
         title = app.currentUser.get("username") + "'s Tasks";
-      } else if (this.kind === 'completed') {
+      } if(this.kind === 'completed') {
         title = "Completed Tasks";
       }
       this.$el.html(""); // reset the $el's <div> contents to nothing so that further `render()` calls don't just keep appended to the old stuff
       this.$el.append($("<h1>").html(title));
-      // make a new TaskView for each this.relevantTasks
       var self = this;
-      this.relevantTasks.forEach(function(e) {
+      this.collection.forEach(function(task) {
         var taskView = new TaskView({
-          model: e,
+          model: task
         });
         self.$el.append(taskView.$el);
       });
+
       this.$el.addClass('task-collection');
       this.$el.addClass(this.kind);
     }
@@ -176,11 +174,12 @@ var GUI = (function() { //IIFE for all Views
   // would also the name of the current user, a logout button, and a Create Task button
   var HomePageView = Backbone.View.extend({
     user: null,
-    tasks: null,
+    userTasks: null,
     initialize: function(opts) {
       _.extend(this, opts);
       this.render();
       $("#app").html(this.$el);
+      console.log(this.userTasks);
     },
     render: function() {
       this.$el.append($("<h1>").html("Hello " + this.user.get("username")));
@@ -190,15 +189,15 @@ var GUI = (function() { //IIFE for all Views
       var $taskViews = $("<div id='taskViews'>");
 
       var unassignedTasks = new TaskCollectionView({
-        collection: app.gui.tasks,
+        collection: this.unassignedTasks,
         kind: "unassigned"
       });
       var userTasks = new TaskCollectionView({
-        collection: app.gui.tasks,
+        collection: this.userTasks,
         kind: "user"
       });
       var completedTasks = new TaskCollectionView({
-        collection: app.gui.tasks,
+        collection: this.completedTasks,
         kind: "completed"
       });
       $taskViews.append(unassignedTasks.$el);
@@ -212,8 +211,10 @@ var GUI = (function() { //IIFE for all Views
     },
     logout: function(e) {
       var loginView = new LoginView({
-        collection: app.gui.users
-      })
+        collection: app.gui.users,
+        unassignedTasks: new TaskCollection({id: "unassigned"}),
+        completedTasks: new TaskCollection({id: "completed"})
+      });
       this.remove();
     },
     showNewTaskView: function(e) {
@@ -231,10 +232,13 @@ var GUI = (function() { //IIFE for all Views
 
   // a list of known users to choose from
   var LoginView = Backbone.View.extend({
-    initialize: function() {
+    initialize: function(opts) {
+      _.extend(this, opts)
       this.render();
       $("#app").append(this.$el);
       this.listenTo(app.users, "update", this.render)
+      console.log(this.unassignedTasks);
+      console.log(this.completedTasks);
     },
     events: {
       "click button#login": "login",
@@ -245,10 +249,14 @@ var GUI = (function() { //IIFE for all Views
       var id = $("select#usernames").val();
       var selectedUser = this.collection.get(id);
       app.currentUser = selectedUser;
+      console.log("app.currentUser", app.currentUser);
       var homePageView = new HomePageView({
         user: selectedUser,
-        tasks: app.gui.tasks,
+        userTasks : new TaskCollection({ id : app.currentUser.get("username") }),
+        unassignedTasks: this.unassignedTasks,
+        completedTasks: this.completedTasks
       })
+
       this.remove();
     },
     addNewUser: function(){
@@ -271,10 +279,13 @@ var GUI = (function() { //IIFE for all Views
   });
   // generic ctor to represent interface:
   function GUI(users, tasks, el) {
+    this.id = null;
     this.users = users; // a UsersCollection
     this.tasks = tasks; // an IssuesCollection
     var loginView = new LoginView({
-      collection: this.users
+      collection: this.users,
+      unassignedTasks: new TaskCollection({id: "unassigned"}),
+      completedTasks: new TaskCollection({id: "completed"})
     })
   }
 
