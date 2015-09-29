@@ -127,10 +127,10 @@ var GUI = (function() { //IIFE for all Views
       } else if (this.kind === "user"){
         var assigned = this.collection.filter(function(task){
           return task.get('status') === "in progress" && task.get('assignee') === app.currentUser.get("username");
-        })
+        });
         var created = this.collection.filter(function(task){
           return task.get('creator') === app.currentUser.get("username") && task.get('status') !== "completed";
-        })
+        });
         this.relevantTasks = _.union(assigned, created);
       } else {
         this.relevantTasks = this.collection.where({
@@ -143,7 +143,7 @@ var GUI = (function() { //IIFE for all Views
     // },
     // removeTaskView: function () {
 
-    // }, 
+    // },
     updateTaskView : function (e) {
       this.render();
     },
@@ -151,12 +151,12 @@ var GUI = (function() { //IIFE for all Views
       this.filterCollection();
       this.relevantTasks.reverse();
       // var title = this.kind === 'unassigned' ? "Unassigned Tasks" : app.currentUser.get("username") + "'s Tasks"
-      var title = "Unassigned Tasks"
+      var title = "Unassigned Tasks";
       if(this.kind === 'user'){
-        title = app.currentUser.get("username") + "'s Tasks"
+        title = app.currentUser.get("username") + "'s Tasks";
       } else if (this.kind === 'completed') {
-        title = "Completed Tasks"
-      };
+        title = "Completed Tasks";
+      }
       this.$el.html(""); // reset the $el's <div> contents to nothing so that further `render()` calls don't just keep appended to the old stuff
       this.$el.append($("<h1>").html(title));
       // make a new TaskView for each this.relevantTasks
@@ -166,7 +166,7 @@ var GUI = (function() { //IIFE for all Views
           model: e,
         });
         self.$el.append(taskView.$el);
-      })
+      });
       this.$el.addClass('task-collection');
       this.$el.addClass(this.kind);
     }

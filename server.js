@@ -2,34 +2,34 @@ var express = require('express');
 var bodyParser = require('body-parser');
 
 var app = express();
-var config = require('./config.js')
-var db = require('orchestrate')(config.dbkey)
+var config = require('./config.js');
+var db = require('orchestrate')(config.dbkey);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : false}));
 app.use(express.static(__dirname));
 
 app.get('/tasks', function (req, res) {
-	console.log('hi')
-	db.list('tasks') 
+	console.log('hi');
+	db.list('tasks')
 	.then(function (result) {
-		console.log('working?')
+		console.log('working?');
 		var data = (result.body.results);
-		console.log(data)
+		console.log(data);
 		var allData = data.map(function(element, index, array) {
-			return({ 
+			return({
 				title: element.value.title,
 				description: element.value.description,
 				creator: element.value.creator,
 				assignee: element.value.assignee,
 				status: element.value.status
 			});
-		})
-		res.send(allData)
+		});
+		res.send(allData);
 	})
 	.fail(function(err) {
-		console.log(err)
-	})
+		console.log(err);
+	});
 });
 
 // app.put('/tasks/:id', function (req, res) {
@@ -42,11 +42,11 @@ app.get('/tasks', function (req, res) {
 // });
 
 // app.post('/tasks', function (req, res) {
-// 	db.list('tasks') 
+// 	db.list('tasks')
 // 	.then(function (result) {
 // 		var data = (result.body.results);
 // 		var allData = data.map(function(element, index, array) {
-// 			return({id: element.path.key, 
+// 			return({id: element.path.key,
 // 				title: element.value.title,
 // 				description: element.value.description,
 // 				creator: element.value.creator,
@@ -82,7 +82,7 @@ app.get('/tasks', function (req, res) {
 // });
 
 app.get('/users', function (req, res) {
-	db.list('users') 
+	db.list('users')
     	.then(function (result) {
     		var data = (result.body.results);
     		var allData = data.map(function(element, index, array) {
@@ -101,7 +101,7 @@ app.post('/users', function (req, res) {
 	db.post('users', req.body)
 		.then(function (result) {
 			console.log('end')
-			res.end();	
+			res.end();
 		})
 		.fail(function (err) {
 			console.log(err)
