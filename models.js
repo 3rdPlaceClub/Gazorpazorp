@@ -29,9 +29,12 @@ var UserCollection = Backbone.Collection.extend({
 
 var TaskCollection = Backbone.Collection.extend({
 	model:TaskModel,
-	url: '/tasks',
-	initialize: function () {
-		var self = this
+	// url : '/tasks/:' + id,
+		initialize: function (opts) {
+			_.extend(this, opts);
+
+		console.log("this.id", this.id)
+		this.url = '/tasks/' + this.id,
 		this.fetch()
 	}
 })

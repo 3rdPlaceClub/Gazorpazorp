@@ -9,28 +9,58 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : false}));
 app.use(express.static(__dirname));
 
-app.get('/tasks', function (req, res) {
-	console.log('hi')
-	db.list('tasks') 
-	.then(function (result) {
-		console.log('working?')
+
+app.get('/tasks/:id', function(req, res){
+	console.log(req.params.id)
+	db.search('tasks', req.params.id)
+	.then(function(result){
 		var data = (result.body.results);
-		console.log(data)
+		console.log("CompletedTASKS",result.body.results)
 		var allData = data.map(function(element, index, array) {
-			return({ 
-				title: element.value.title,
-				description: element.value.description,
-				creator: element.value.creator,
-				assignee: element.value.assignee,
-				status: element.value.status
-			});
-		})
-		res.send(allData)
+					return({
+						title: element.value.title,
+						description: element.value.description,
+						creator: element.value.creator,
+						assignee: element.value.assignee,
+						status: element.value.status
+					});
+				});
+		res.send(allData);
 	})
-	.fail(function(err) {
-		console.log(err)
+	.fail(function(err){
+		console.log("ERROR:", err.body.message)
 	})
 });
+
+
+
+
+
+
+
+
+// app.get('/tasks', function (req, res) {
+// 	console.log('hi')
+// 	db.list('tasks')
+// 	.then(function (result) {
+// 		console.log('working?')
+// 		var data = (result.body.results);
+// 		console.log(data)
+// 		var allData = data.map(function(element, index, array) {
+// 			return({
+// 				title: element.value.title,
+// 				description: element.value.description,
+// 				creator: element.value.creator,
+// 				assignee: element.value.assignee,
+// 				status: element.value.status
+// 			});
+// 		})
+// 		res.send(allData)
+// 	})
+// 	.fail(function(err) {
+// 		console.log(err)
+// 	})
+// });
 
 // app.put('/tasks/:id', function (req, res) {
 // 	console.log('put id')
@@ -42,11 +72,11 @@ app.get('/tasks', function (req, res) {
 // });
 
 // app.post('/tasks', function (req, res) {
-// 	db.list('tasks') 
+// 	db.list('tasks')
 // 	.then(function (result) {
 // 		var data = (result.body.results);
 // 		var allData = data.map(function(element, index, array) {
-// 			return({id: element.path.key, 
+// 			return({id: element.path.key,
 // 				title: element.value.title,
 // 				description: element.value.description,
 // 				creator: element.value.creator,
@@ -82,11 +112,11 @@ app.get('/tasks', function (req, res) {
 // });
 
 app.get('/users', function (req, res) {
-	db.list('users') 
+	db.list('users')
     	.then(function (result) {
     		var data = (result.body.results);
     		var allData = data.map(function(element, index, array) {
-    			return({id: element.path.key, username: element.value.username});
+    			return({id: element.value.username, username: element.value.username});
     		})
     		res.send(allData)
     	})
@@ -101,7 +131,7 @@ app.post('/users', function (req, res) {
 	db.post('users', req.body)
 		.then(function (result) {
 			console.log('end')
-			res.end();	
+			res.end();
 		})
 		.fail(function (err) {
 			console.log(err)
