@@ -97,8 +97,6 @@ var GUI = (function() { //IIFE for all Views
 
   var TaskCollectionView = Backbone.View.extend({
     initialize: function(opts) {
-      this.relevantTasks = [];
-      this.taskViews = [];
       _.extend(this, opts);
       this.listenTo(this.collection, 'add', this.addTask);
       this.listenTo(this.collection, 'change', this.updateTask);
@@ -148,25 +146,25 @@ var GUI = (function() { //IIFE for all Views
       this.render();
     },
     render: function() {
-      // this.filterCollection();
-      this.relevantTasks.reverse();
-      // var title = this.kind === 'unassigned' ? "Unassigned Tasks" : app.currentUser.get("username") + "'s Tasks"
-      var title = "Unassigned Tasks"
-      if(this.kind === 'user'){
-        title = app.currentUser.get("username") + "'s Tasks"
-      } else if (this.kind === 'completed') {
-        title = "Completed Tasks"
-      };
+
+      var title;
+      if (this.kind === "unassigned") {
+        title =  "Unassigned Tasks";
+      } if(this.kind === 'user'){
+        title = app.currentUser.get("username") + "'s Tasks";
+      } if(this.kind === 'completed') {
+        title = "Completed Tasks";
+      }
       this.$el.html(""); // reset the $el's <div> contents to nothing so that further `render()` calls don't just keep appended to the old stuff
       this.$el.append($("<h1>").html(title));
-      // make a new TaskView for each this.relevantTasks
       var self = this;
-      this.relevantTasks.forEach(function(e) {
+      this.collection.forEach(function(task) {
         var taskView = new TaskView({
-          model: e,
+          model: task
         });
         self.$el.append(taskView.$el);
-      })
+      });
+
       this.$el.addClass('task-collection');
       this.$el.addClass(this.kind);
     }
@@ -202,7 +200,7 @@ var GUI = (function() { //IIFE for all Views
         collection: this.completedTasks,
         kind: "completed"
       });
-      // $taskViews.append(unassignedTasks.$el);
+      $taskViews.append(unassignedTasks.$el);
       $taskViews.append(userTasks.$el);
       $taskViews.append(completedTasks.$el);
       this.$el.append($taskViews);
@@ -213,8 +211,10 @@ var GUI = (function() { //IIFE for all Views
     },
     logout: function(e) {
       var loginView = new LoginView({
-        collection: app.gui.users
-      })
+        collection: app.gui.users,
+        unassignedTasks: new TaskCollection({id: "unassigned"}),
+        completedTasks: new TaskCollection({id: "completed"})
+      });
       this.remove();
     },
     showNewTaskView: function(e) {
