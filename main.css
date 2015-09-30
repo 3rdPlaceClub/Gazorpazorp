@@ -1,0 +1,154 @@
+body {
+	font-family: 'Cabin', sans-serif;
+	box-sizing: border-box;
+}
+
+.nametag {
+	font-size: .8em;
+	margin-bottom: -.25px;
+	color: #FFFFFF;
+
+
+}
+
+#login-area {
+
+	background-color: #5CC5CC;
+	width: 60%;
+	padding: 20px;
+	margin: auto;
+	border-radius: 15px;
+	box-shadow: 5px 5px 5px rgba(0,0,0, 0.75);
+}
+
+#login-area h1 {
+	text-align: center;
+	background-color: #30A8BA;
+	margin-top: -10px;
+	border-radius: 10px;
+	/*box-shadow: 5px 5px 5px rgba(0,0,0, 0.75);*/
+
+}
+#login-area h2 {
+	color: #FF0000;
+	text-align: center;
+}
+
+.userField{
+	text-align: center;
+}
+
+button.newName{
+	text-align: center;
+}
+
+body{
+	text-align: center;
+}
+
+button {
+	margin-left: 20px;
+	border-radius: 3px;
+}
+
+button[#newName]{
+	margin-top: 200px;
+
+
+}
+
+.main-heading{
+	color: #FF0000;
+}
+
+
+h1, h2, li{
+color: #FF0000;
+
+}
+
+#userField{
+  background: url(../img/keyIcon.png) 12px 11px no-repeat, linear-gradient(to bottom, #f7f7f8 0%,#ffffff 100%);
+  border-radius: 3px;
+  border: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2) inset, 0 -1px 0 rgba(0,0,0,0.05) inset;
+  transition: all 0.2s linear;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 13px;
+  color: #222222;
+  position: relative;
+  height: 25px;
+  width: 150px;
+  padding-left: 30px;
+
+  &::-webkit-input-placeholder {
+    color: #999999;
+  }
+
+  &:-moz-placeholder {
+    color: #999999;
+  }
+
+  &:focus{
+    box-shadow: 0 1px 0 #2392F3 inset, 0 -1px 0 #2392F3 inset, 1px 0 0 #2392F3 inset, -1px 0 0 #2392F3 inset, 0 0 4px rgba(35,146,243,0.5);
+    outline: none;
+    background: url(../img/keyIcon.png) 12px 11px no-repeat, #FFF;
+  }
+}
+
+#userview{
+ 	background-color: #5CC5CC;
+	width: 60%;
+	padding: 20px;
+	margin: auto;
+	border-radius: 15px;
+	box-shadow: 5px 5px 5px rgba(0,0,0, 0.75);
+}
+
+
+#addTask{
+
+	display: none;
+}
+
+
+#taskview{
+
+ 	background-color: #5CC5CC;
+	width: 60%;
+	padding: 20px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 30px;
+	border-radius: 15px;
+	box-shadow: 5px 5px 5px rgba(0,0,0, 0.75);
+}
+
+
+
+
+button#login, button#newName, button#createTask, button#showAll, button#logout, button#addTask, button#homePage {
+	-moz-box-shadow:inset 0px 39px 0px -24px #e67a73;
+	-webkit-box-shadow:inset 0px 39px 0px -24px #e67a73;
+	box-shadow:inset 0px 39px 0px -24px #e67a73;
+	background-color:#e4685d;
+	-moz-border-radius:16px;
+	-webkit-border-radius:16px;
+	border-radius:16px;
+	border:2px solid #ffffff;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	padding:9px 15px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #b23e35;
+}
+button#login, button#newName, button#createTask, button#showAll, button#logout, button#addTask, button#homePage:hover {
+	background-color:#eb675e;
+}
+button#login, button#newName, button#createTask, button#showAll, button#logout, button#addTask, button#homePage:active {
+	position:relative;
+	top:1px;
+}

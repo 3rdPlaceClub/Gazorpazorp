@@ -20,6 +20,7 @@ var TaskModel = Backbone.Model.extend({
 var allModels = {};
 
 var SharedTaskModel = function(attrs) {
+	console.log(attrs);
 	if (('id' in attrs) && allModels[attrs.id]) {
 		//already got one, reuse it:
 		return allModels[attrs.id];
@@ -42,14 +43,14 @@ var UserCollection = Backbone.Collection.extend({
 });
 
 var TaskCollection = Backbone.Collection.extend({
-	model:TaskModel,
+	model:SharedTaskModel,
 
 	// url : '/tasks/:' + id,
 		initialize: function (opts) {
 			_.extend(this, opts);
 
-		console.log("this.id", this.id)
-		this.url = '/tasks/' + this.id,
-		this.fetch()
+		console.log("this.id", this.id);
+		this.url = '/tasks/' + this.id;
+		this.fetch();
 	}
-})
+});
