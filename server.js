@@ -85,9 +85,16 @@ app.get('/tasks/:id', function(req, res){
 // 	})
 // });
 
-// app.put('/tasks/:id', function (req, res) {
-// 	db.put('tasks', )
-// });
+app.put('/tasks/:id', function (req, res) {
+	console.log(id);
+	db.put('tasks', req.params.id)
+		.then(function (result) {
+			console.log(result.request.body);
+		})
+		.fail(function (result) {
+			console.log('Error', err.body.message);
+		});
+});
 
 app.post('/tasks', function (req, res) {
 	db.search('tasks')
@@ -135,25 +142,25 @@ app.get('/users', function (req, res) {
     		var data = (result.body.results);
     		var allData = data.map(function(element, index, array) {
     			return({id: element.value.username, username: element.value.username});
-    		})
-    		res.send(allData)
+    		});
+    		res.send(allData);
     	})
     	.fail(function(err) {
-    		console.log(err)
-    	})
+    		console.log(err);
+    	});
 });
 
 app.post('/users', function (req, res) {
-	console.log('post users')
-	console.log(req.body)
+	console.log('post users');
+	console.log(req.body);
 	db.post('users', req.body)
 		.then(function (result) {
-			console.log('end')
+			console.log('end');
 			res.end();
 		})
 		.fail(function (err) {
-			console.log(err)
-		})
+			console.log(err);
+		});
 });
 
 app.listen(3000);
