@@ -9,16 +9,33 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : false}));
 app.use(express.static(__dirname));
 
+app.get('/tasks/:id', function(req, res){
+	db.search('tasks', req.params.id)
+	.then(function(result){
+		var data = (result.body.results);
+		var allData = data.map(function(element, index, array) {
+			return({
+				title: element.value.title,
+				description: element.value.description,
+				creator: element.value.creator,
+				assignee: element.value.assignee,
+				status: element.value.status
+			});
+		});
+		res.send(allData);
+	})
+	.fail(function(err){
+		console.log(err);
+	});
+});
 
-// app.get('/tasks', function (req, res) {
-// 	console.log('hi');
-// 	db.list('tasks')
+// app.post('/tasks', function (req, res) {
+// 	console.log('post no id')
+// 	db.search('tasks')
 // 	.then(function (result) {
-// 		console.log('working?');
 // 		var data = (result.body.results);
-// 		console.log(data);
 // 		var allData = data.map(function(element, index, array) {
-// 			return({
+// 			return({id: element.path.key,
 // 				title: element.value.title,
 // 				description: element.value.description,
 // 				creator: element.value.creator,
@@ -31,102 +48,46 @@ app.use(express.static(__dirname));
 // 	.fail(function(err) {
 // 		console.log(err);
 // 	});
+// });
 
+app.post('/tasks/:id', function(req, res){
+	console.log('post no id');
+	console.log(req.body)
+	var task = req.body
+	task.id = Date()
 
-app.get('/tasks/:id', function(req, res){
-	console.log(req.params.id);
-	db.search('tasks', req.params.id)
-	.then(function(result){
-		var data = (result.body.results);
-		console.log("CompletedTASKS",result.body.results);
-		var allData = data.map(function(element, index, array) {
-					return({
-						title: element.value.title,
-						description: element.value.description,
-						creator: element.value.creator,
-						assignee: element.value.assignee,
-						status: element.value.status
-					});
-				});
-		res.send(allData);
-	})
-	.fail(function(err){
-		console.log("ERROR:", err.body.message);
-	});
+	db.put('tasks', task.id, task)
+		console.log(task)
+		.then(function(result){
+			res.send(task)
+		})
+		.fail(function(err){
+			console.log('error')
+		})
+})
+
+app.put('/tasks', function (req, res) {
+	db.put('tasks', '2', {"assignee": app.currentUser.get("username"), "status": "in progress"})
+		.then(function(result) {
+			console.log('it worked!')
+		})
+		.fail(function(err) {
+			console.log('ERROR')
+		})
 });
 
-
-
-
-
-
-
-
-// app.get('/tasks', function (req, res) {
-// 	console.log('hi')
-// 	db.list('tasks')
-// 	.then(function (result) {
-// 		console.log('working?')
-// 		var data = (result.body.results);
-// 		console.log(data)
-// 		var allData = data.map(function(element, index, array) {
-// 			return({
-// 				title: element.value.title,
-// 				description: element.value.description,
-// 				creator: element.value.creator,
-// 				assignee: element.value.assignee,
-// 				status: element.value.status
-// 			});
+// app.post('/tasks/:id', function (req, res) {
+// 	console.log('post with id')
+// 	console.log(req.params.id)
+// 	console.log(req.params)
+// 	console.log(req.body)
+// 	db.put('tasks', req.params.id)
+// 		.then(function (result) {
+// 			console.log(result.request.body)
 // 		})
-// 		res.send(allData)
-// 	})
-// 	.fail(function(err) {
-// 		console.log(err)
-// 	})
-// });
-
-// app.put('/tasks/:id', function (req, res) {
-// 	db.put('tasks', )
-// });
-
-app.post('/tasks', function (req, res) {
-	db.search('tasks')
-	.then(function (result) {
-		var data = (result.body.results);
-		var allData = data.map(function(element, index, array) {
-			return({id: element.path.key,
-				title: element.value.title,
-				description: element.value.description,
-				creator: element.value.creator,
-				assignee: element.value.assignee,
-				status: element.value.status
-			});
-		});
-		res.send(allData);
-	})
-	.fail(function(err) {
-		console.log(err);
-	});
-	// console.log('post no id')
-	// var newId = tasks.length;
-	// tasks[newId] = req.body;
-	// console.log(tasks)
-	// res.send({id: newId})
-});
-
-// app.get('/users/:id', function (req, res) {
-//   var id = req.params.id;
-//   console.log('Sending users #%s...',id);
-//   res.send(users[id]);
-// });
-
-// app.put('/users/:id', function (req, res) {
-//   var id = req.params.id;
-//   console.log('Receiving users #%s...',id);
-//   var a = req.body;
-//   users[id] = {username: a.username};
-//   showData();
-//   res.send({});
+// 		.fail(function (result) {
+// 			console.log('err')
+// 		})
 // });
 
 app.get('/users', function (req, res) {
@@ -144,11 +105,9 @@ app.get('/users', function (req, res) {
 });
 
 app.post('/users', function (req, res) {
-	console.log('post users')
 	console.log(req.body)
 	db.post('users', req.body)
 		.then(function (result) {
-			console.log('end')
 			res.end();
 		})
 		.fail(function (err) {

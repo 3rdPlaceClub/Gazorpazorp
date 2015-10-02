@@ -18,8 +18,11 @@
   },
   "homepage": "https://github.com/3rdPlaceClub/gazorpazorp#readme",
   "dependencies": {
+    "bluebird": "^2.10.1",
     "body-parser": "^1.14.1",
     "express": "^4.13.3",
-    "orchestrate": "^0.5.0"
+    "knex": "^0.8.6",
+    "orchestrate": "^0.5.0",
+    "pg": "^4.4.2"
   }
 }
